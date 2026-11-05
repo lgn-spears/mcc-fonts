@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post Cover Maker</title>
+<meta name="robots" content="noindex">
+<style>
+@font-face { font-family: "NHG"; src: url("../NeueHaasDisplayRoman.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "NHG"; src: url("../NeueHaasDisplayMediu.ttf") format("truetype"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "NHG"; src: url("../NeueHaasDisplayBold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+:root {
+    --blue: #3F67C5;
+    --blue-dark: #334fa0;
+    --ink: oklch(0.2 0.01 262);
+    --ink-dim: oklch(0.45 0.01 262);
+    --paper: oklch(0.985 0.003 262);
+    --panel: oklch(0.955 0.006 262);
+    --edge: oklch(0.88 0.01 262);
+    --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+    font-family: "NHG", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+}
+main { max-width: 1080px; margin: 0 auto; padding: var(--space-2xl) var(--space-md) 96px; display: grid; gap: var(--space-xl); }
+h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.lede { font-size: 18px; color: var(--ink-dim); max-width: 60ch; margin-top: var(--space-sm); }
+ol.steps { display: grid; gap: var(--space-sm); padding-left: 1.4em; font-size: 17px; max-width: 65ch; }
+.tip { font-size: 15px; color: var(--ink-dim); }
+.tip strong { color: var(--ink); }
+.panel { background: var(--panel); border: 1px solid var(--edge); border-radius: 8px; padding: var(--space-lg); display: grid; gap: var(--space-md); }
+.label { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink-dim); }
+.row { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
+.btn {
+    font: inherit; font-size: 16px; font-weight: 500;
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-sm);
+    min-height: 48px; padding: 0 var(--space-lg);
+    border-radius: 4px; border: 1px solid var(--blue); cursor: pointer;
+    background: var(--blue); color: #f8f8f8; text-decoration: none;
+    transition: background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.btn:hover { background: var(--blue-dark); }
+.btn--ghost { background: transparent; color: var(--blue); }
+.btn--ghost:hover { background: oklch(0.94 0.03 262); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn:focus-visible, .seg button:focus-visible, .starter:focus-visible, #stage:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.drop { border: 2px dashed var(--edge); border-radius: 8px; padding: var(--space-lg); text-align: center; color: var(--ink-dim); }
+.drop.is-over { border-color: var(--blue); background: oklch(0.95 0.03 262); }
+.starters { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-sm); }
+.starter { padding: 0; border: 2px solid transparent; border-radius: 6px; background: none; cursor: pointer; aspect-ratio: 16 / 9; overflow: hidden; }
+.starter img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.starter[aria-pressed=true] { border-color: var(--blue); }
+.seg { display: inline-flex; border: 1px solid var(--blue); border-radius: 4px; overflow: hidden; }
+.seg button { font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 var(--space-md); border: 0; background: transparent; color: var(--blue); cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--blue); color: #f8f8f8; }
+.workspace { display: grid; gap: var(--space-lg); }
+@media (min-width: 900px) { .workspace { grid-template-columns: 3fr 2fr; align-items: start; } }
+#stage { width: 100%; height: auto; display: block; border-radius: 6px; cursor: crosshair; background: var(--edge); aspect-ratio: 16 / 9; touch-action: none; }
+.previews { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.preview { display: grid; gap: var(--space-xs); }
+.preview canvas { width: 100%; height: auto; display: block; border-radius: 4px; background: var(--edge); }
+.preview--wide { grid-column: 1 / -1; }
+.empty { font-size: 15px; color: var(--ink-dim); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+    <header>
+        <h1>Make a cover for your post.</h1>
+        <p class="lede">Every Macedonia post gets a photo at the top. This makes yours match the rest of the website in about a minute.</p>
+    </header>
+
+    <ol class="steps">
+        <li>Choose a photo, or start with one of the church photos below.</li>
+        <li>Tap the most important part of the photo, usually someone's face. That part stays in view on every screen.</li>
+        <li>Download the cover, then upload it as your post's photo in Nucleus.</li>
+    </ol>
+    <p class="tip"><strong>Leave words off the photo.</strong> Nucleus puts your post title on top of it for you.</p>
+
+    <section class="panel" aria-labelledby="pickLabel">
+        <p class="label" id="pickLabel">1. CHOOSE A PHOTO</p>
+        <label class="drop" id="drop">
+            <input type="file" id="file" accept="image/*">
+            <span class="row" style="justify-content:center">
+                <span class="btn" aria-hidden="true">Choose A Photo</span>
+                <span>or drag one here</span>
+            </span>
+        </label>
+        <p class="label">NO PHOTO? START WITH ONE OF OURS</p>
+        <div class="starters" id="starters"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="adjustLabel">
+        <p class="label" id="adjustLabel">2. TAP THE MOST IMPORTANT PART, THEN PICK A LOOK</p>
+        <div class="row">
+            <div class="seg" role="group" aria-label="Look">
+                <button type="button" data-look="blue" aria-pressed="true">Church Blue</button>
+                <button type="button" data-look="color" aria-pressed="false">Full Color</button>
+            </div>
+        </div>
+        <p class="tip">Church Blue matches the Groups page. Full Color works best for bright event photos.</p>
+        <div class="workspace">
+            <canvas id="stage" width="1920" height="1080" tabindex="0" aria-label="Your cover. Click or tap to choose what stays in view."></canvas>
+            <div>
+                <p class="label" style="margin-bottom:8px">HOW IT WILL LOOK</p>
+                <p class="empty" id="emptyNote">Choose a photo to see it on each screen.</p>
+                <div class="previews" id="previews" hidden>
+                    <div class="preview preview--wide"><canvas data-ratio="2.42" width="484" height="200"></canvas><span class="tip">Website header</span></div>
+                    <div class="preview"><canvas data-ratio="0.93" width="186" height="200"></canvas><span class="tip">Phone header</span></div>
+                    <div class="preview"><canvas data-ratio="1" width="200" height="200"></canvas><span class="tip">Groups page</span></div>
+                    <div class="preview preview--wide"><canvas data-ratio="1.78" width="356" height="200"></canvas><span class="tip">Post card</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel" aria-labelledby="dlLabel">
+        <p class="label" id="dlLabel">3. DOWNLOAD</p>
+        <div class="row">
+            <button type="button" class="btn" id="download" disabled>Download Cover</button>
+            <span class="tip" id="status" role="status"></span>
+        </div>
+    </section>
+</main>
+
+<script>
+(function () {
+    var W = 1920, H = 1080;
+    var BLUE = [63, 103, 197];
+    var STARTERS = [
+        ['../mcc-church-1928.jpg', 'The 1928 sanctuary'],
+        ['../mcc-pastor-preaching.jpg', 'Sunday preaching'],
+        ['../mcc-family-in-service.jpg', 'Sunday worship'],
+        ['../mcc-photo-9833.jpg', 'Fellowship'],
+        ['../mcc-cookout-guys.jpg', 'Cookout'],
+        ['../mcc-community-serving.png', 'Serving the community']
+    ];
+
+    var stage = document.getElementById('stage');
+    var ctx = stage.getContext('2d', { willReadFrequently: true });
+    var file = document.getElementById('file');
+    var drop = document.getElementById('drop');
+    var dl = document.getElementById('download');
+    var status = document.getElementById('status');
+    var previews = [].slice.call(document.querySelectorAll('#previews canvas'));
+
+    var img = null, focus = { x: 0.5, y: 0.5 }, look = 'blue', name = 'cover';
+
+    /* Starter photos */
+    var starters = document.getElementById('starters');
+    STARTERS.forEach(function (s) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'starter';
+        b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('aria-label', s[1]);
+        var i = document.createElement('img');
+        i.src = s[0]; i.alt = ''; i.loading = 'lazy';
+        b.appendChild(i);
+        b.addEventListener('click', function () {
+            [].forEach.call(starters.children, function (c) { c.setAttribute('aria-pressed', String(c === b)); });
+            load(s[0], s[1]);
+        });
+        starters.appendChild(b);
+    });
+
+    function load(src, label) {
+        var i = new Image();
+        i.onload = function () {
+            img = i; focus = { x: 0.5, y: 0.45 };
+            name = (label || 'cover').toLowerCase().replace(/\.[a-z0-9]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cover';
+            render();
+            status.textContent = '';
+        };
+        i.onerror = function () { status.textContent = "That file didn't open as a photo. Try a JPG or PNG."; };
+        i.src = src;
+    }
+
+    function useFile(f) {
+        if (!f) return;
+        if (!/^image\//.test(f.type)) { status.textContent = "That file isn't a photo. Try a JPG or PNG."; return; }
+        [].forEach.call(starters.children, function (c) { c.setAttribute('aria-pressed', 'false'); });
+        load(URL.createObjectURL(f), f.name);
+    }
+    file.addEventListener('change', function () { useFile(file.files[0]); });
+    ['dragenter', 'dragover'].forEach(function (e) { drop.addEventListener(e, function (ev) { ev.preventDefault(); drop.classList.add('is-over'); }); });
+    ['dragleave', 'drop'].forEach(function (e) { drop.addEventListener(e, function (ev) { ev.preventDefault(); drop.classList.remove('is-over'); }); });
+    drop.addEventListener('drop', function (ev) { useFile(ev.dataTransfer.files[0]); });
+
+    /* Look toggle */
+    [].forEach.call(document.querySelectorAll('[data-look]'), function (b) {
+        b.addEventListener('click', function () {
+            look = b.dataset.look;
+            [].forEach.call(document.querySelectorAll('[data-look]'), function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+            render();
+        });
+    });
+
+    /* Tap to set what stays in view: the tapped point becomes the cover's center when the photo allows */
+    var crop = null;
+    function pick(ev) {
+        if (!img || !crop) return;
+        var r = stage.getBoundingClientRect();
+        var px = (ev.clientX - r.left) / r.width, py = (ev.clientY - r.top) / r.height;
+        focus = { x: (crop.sx + px * crop.sw) / img.naturalWidth, y: (crop.sy + py * crop.sh) / img.naturalHeight };
+        render();
+    }
+    stage.addEventListener('pointerdown', pick);
+    stage.addEventListener('keydown', function (ev) {
+        var step = ev.shiftKey ? 0.1 : 0.03, k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+        if (!k || !img) return;
+        ev.preventDefault();
+        focus = { x: Math.min(1, Math.max(0, focus.x + k[0])), y: Math.min(1, Math.max(0, focus.y + k[1])) };
+        render();
+    });
+
+    function cropFor(iw, ih, ratio, f) {
+        var sw, sh;
+        if (iw / ih > ratio) { sh = ih; sw = ih * ratio; } else { sw = iw; sh = iw / ratio; }
+        var sx = Math.min(iw - sw, Math.max(0, f.x * iw - sw / 2));
+        var sy = Math.min(ih - sh, Math.max(0, f.y * ih - sh / 2));
+        return { sx: sx, sy: sy, sw: sw, sh: sh };
+    }
+
+    function render() {
+        if (!img) return;
+        crop = cropFor(img.naturalWidth, img.naturalHeight, W / H, focus);
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(img, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, W, H);
+        if (look === 'blue') {
+            /* Same treatment as the Groups page cards: grayscale, lifted, then multiplied by the church blue */
+            var d = ctx.getImageData(0, 0, W, H), p = d.data;
+            for (var i = 0; i < p.length; i += 4) {
+                var g = 0.2126 * p[i] + 0.7152 * p[i + 1] + 0.0722 * p[i + 2];
+                g = ((g / 255 - 0.5) * 1.05 + 0.5) * 255 * 1.45;   /* a little brighter than the cards: Nucleus darkens post headers again */
+                g = g < 0 ? 0 : g > 255 ? 255 : g;
+                p[i] = g * BLUE[0] / 255; p[i + 1] = g * BLUE[1] / 255; p[i + 2] = g * BLUE[2] / 255;
+            }
+            ctx.putImageData(d, 0, 0);
+        }
+        /* Previews crop the finished cover from its center, the way the website does */
+        previews.forEach(function (c) {
+            var ratio = parseFloat(c.dataset.ratio), pc = c.getContext('2d');
+            var cc = cropFor(W, H, ratio, { x: 0.5, y: 0.5 });
+            c.width = Math.round(200 * ratio); c.height = 200;
+            pc.drawImage(stage, cc.sx, cc.sy, cc.sw, cc.sh, 0, 0, c.width, c.height);
+        });
+        document.getElementById('previews').hidden = false;
+        document.getElementById('emptyNote').hidden = true;
+        dl.disabled = false;
+    }
+
+    dl.addEventListener('click', function () {
+        if (!img) return;
+        stage.toBlob(function (blob) {
+            if (!blob) { status.textContent = "Couldn't make the file. Try a different photo."; return; }
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = name + '-cover.jpg';
+            document.body.appendChild(a); a.click(); a.remove();
+            status.textContent = 'Downloaded ' + a.download + '. Upload it as your post’s photo in Nucleus.';
+        }, 'image/jpeg', 0.88);
+    });
+})();
+</script>
+</body>
+</html>
